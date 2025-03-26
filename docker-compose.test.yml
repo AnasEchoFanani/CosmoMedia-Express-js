@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  db:
+    environment:
+      MYSQL_ROOT_PASSWORD: test_password
+      MYSQL_DATABASE: cosmomedia_test
+
+  gateway:
+    build:
+      args:
+        NODE_ENV: test
+    environment:
+      NODE_ENV: test
+      LOG_LEVEL: debug
+      RATE_LIMIT_WINDOW_MS: 0
+      RATE_LIMIT_MAX_REQUESTS: 0
+    command: ["npm", "run", "test:gateway"]
+
+  employee:
+    build:
+      args:
+        NODE_ENV: test
+    environment:
+      NODE_ENV: test
+      LOG_LEVEL: debug
+    command: ["npm", "run", "test:employee"]
+
+  client-project:
+    build:
+      args:
+        NODE_ENV: test
+    environment:
+      NODE_ENV: test
+      LOG_LEVEL: debug
+    command: ["npm", "run", "test:client-project"]
+
+  billing:
+    build:
+      args:
+        NODE_ENV: test
+    environment:
+      NODE_ENV: test
+      LOG_LEVEL: debug
+    command: ["npm", "run", "test:billing"]
+
+  service-catalog:
+    build:
+      args:
+        NODE_ENV: test
+    environment:
+      NODE_ENV: test
+      LOG_LEVEL: debug
+    command: ["npm", "run", "test:service-catalog"]

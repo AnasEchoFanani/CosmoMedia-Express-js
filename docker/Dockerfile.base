@@ -1,0 +1,29 @@
+FROM node:20-alpine
+
+# Add production dependencies
+RUN apk add --no-cache \
+    python3 \
+    make \
+    g++
+
+# Create app directory
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Install dependencies
+RUN npm ci --only=production
+
+# Copy shared code
+COPY shared/ ./shared/
+
+# Set default environment
+ENV NODE_ENV=production
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --retries=3 \
+    CMD wget -q --spider http://localhost:${PORT}/health || exit 1
+
+# Use non-root user
+USER node

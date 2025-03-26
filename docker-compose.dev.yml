@@ -1,0 +1,73 @@
+version: '3.8'
+
+services:
+  db:
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: development_password
+      MYSQL_DATABASE: cosmomedia_dev
+
+  redis:
+    ports:
+      - "6379:6379"
+
+  gateway:
+    build:
+      args:
+        NODE_ENV: development
+    volumes:
+      - ./gateway-service:/app/gateway-service
+      - ./shared:/app/shared
+    environment:
+      NODE_ENV: development
+      LOG_LEVEL: debug
+    command: ["npm", "run", "dev:gateway"]
+
+  employee:
+    build:
+      args:
+        NODE_ENV: development
+    volumes:
+      - ./employee-service:/app/employee-service
+      - ./shared:/app/shared
+    environment:
+      NODE_ENV: development
+      LOG_LEVEL: debug
+    command: ["npm", "run", "dev:employee"]
+
+  client-project:
+    build:
+      args:
+        NODE_ENV: development
+    volumes:
+      - ./client-project-service:/app/client-project-service
+      - ./shared:/app/shared
+    environment:
+      NODE_ENV: development
+      LOG_LEVEL: debug
+    command: ["npm", "run", "dev:client-project"]
+
+  billing:
+    build:
+      args:
+        NODE_ENV: development
+    volumes:
+      - ./billing-service:/app/billing-service
+      - ./shared:/app/shared
+    environment:
+      NODE_ENV: development
+      LOG_LEVEL: debug
+    command: ["npm", "run", "dev:billing"]
+
+  service-catalog:
+    build:
+      args:
+        NODE_ENV: development
+    volumes:
+      - ./service-catalog:/app/service-catalog
+      - ./shared:/app/shared
+    environment:
+      NODE_ENV: development
+      LOG_LEVEL: debug
+    command: ["npm", "run", "dev:service-catalog"]
