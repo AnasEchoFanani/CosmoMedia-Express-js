@@ -1,6 +1,6 @@
 import { validationResult } from 'express-validator';
-import Service from '../models/Service.js';
-import { ServiceBundle } from '../models/Service.js';
+import { Service } from '../models/Service.js';
+import ServiceBundle from '../models/ServiceBundle.js';
 import { Op } from 'sequelize';
 
 export const getAllServices = async (req, res) => {

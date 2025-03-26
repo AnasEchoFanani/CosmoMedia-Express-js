@@ -38,29 +38,34 @@ const services = [
 const startService = (service) => {
   console.log(`Starting ${service.name}...`);
   
-  const process = spawn('node', [join(ROOT_DIR, service.script)], {
+  const serviceProcess = spawn('node', [join(ROOT_DIR, service.script)], {
     stdio: 'pipe',
     env: {
       ...process.env,
-      NODE_ENV: env.NODE_ENV
+      NODE_ENV: env.NODE_ENV,
+      DB_HOST: env.DB_HOST,
+      DB_PORT: env.DB_PORT,
+      DB_USER: env.DB_USER,
+      DB_PASSWORD: env.DB_PASSWORD,
+      DB_NAME: env.DB_NAME
     }
   });
 
-  process.stdout.on('data', (data) => {
+  serviceProcess.stdout.on('data', (data) => {
     console.log(`[${service.name}] ${data.toString().trim()}`);
   });
 
-  process.stderr.on('data', (data) => {
+  serviceProcess.stderr.on('data', (data) => {
     console.error(`[${service.name}] Error: ${data.toString().trim()}`);
   });
 
-  process.on('close', (code) => {
+  serviceProcess.on('close', (code) => {
     if (code !== 0) {
       console.error(`${service.name} exited with code ${code}`);
     }
   });
 
-  return process;
+  return serviceProcess;
 };
 
 // Sort services by order and start them
@@ -70,8 +75,8 @@ const processes = sortedServices.map(startService);
 // Handle shutdown
 const shutdown = () => {
   console.log('\nShutting down all services...');
-  processes.forEach((process) => {
-    process.kill();
+  processes.forEach((serviceProcess) => {
+    serviceProcess.kill();
   });
   process.exit(0);
 };

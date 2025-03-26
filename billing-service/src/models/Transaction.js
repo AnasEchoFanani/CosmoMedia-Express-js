@@ -1,5 +1,5 @@
 import { DataTypes } from 'sequelize';
-import sequelize from '../../../src/config/database.js';
+import sequelize from '../../../shared/config/database.js';
 import Invoice from './Invoice.js';
 
 const Transaction = sequelize.define('Transaction', {
@@ -42,11 +42,7 @@ const Transaction = sequelize.define('Transaction', {
   },
   invoiceId: {
     type: DataTypes.BIGINT,
-    allowNull: false,
-    references: {
-      model: Invoice,
-      key: 'id'
-    }
+    allowNull: false
   },
   notes: {
     type: DataTypes.TEXT
@@ -85,7 +81,11 @@ const Transaction = sequelize.define('Transaction', {
 });
 
 // Define relationships
-Invoice.hasMany(Transaction);
-Transaction.belongsTo(Invoice);
+Invoice.hasMany(Transaction, {
+  foreignKey: 'invoiceId'
+});
+Transaction.belongsTo(Invoice, {
+  foreignKey: 'invoiceId'
+});
 
 export default Transaction;

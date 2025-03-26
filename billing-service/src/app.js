@@ -4,7 +4,7 @@ import helmet from 'helmet';
 import compression from 'compression';
 import rateLimit from 'express-rate-limit';
 import routes from './routes/index.js';
-import sequelize from '../../src/config/database.js';
+import sequelize from '../../shared/config/database.js';
 
 // Import models to ensure they are registered with Sequelize
 import './models/Invoice.js';

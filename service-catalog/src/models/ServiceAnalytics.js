@@ -1,6 +1,6 @@
 import { DataTypes } from 'sequelize';
-import sequelize from '../../../src/config/database.js';
-import Service from './Service.js';
+import sequelize from '../../../shared/config/database.js';
+import { Service } from './Service.js';
 
 const ServiceAnalytics = sequelize.define('ServiceAnalytics', {
   id: {

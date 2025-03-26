@@ -1,5 +1,5 @@
 import ServiceAnalytics from '../models/ServiceAnalytics.js';
-import Service from '../models/Service.js';
+import { Service } from '../models/Service.js';
 import { Op } from 'sequelize';
 
 export const getServiceAnalytics = async (req, res) => {

@@ -1,6 +1,6 @@
 import { validationResult } from 'express-validator';
 import ServiceReview from '../models/ServiceReview.js';
-import Service from '../models/Service.js';
+import { Service } from '../models/Service.js';
 import ServiceAnalytics from '../models/ServiceAnalytics.js';
 import { Op } from 'sequelize';
 

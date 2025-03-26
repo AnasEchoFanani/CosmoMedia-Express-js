@@ -1,5 +1,5 @@
 import { DataTypes } from 'sequelize';
-import sequelize from '../../../src/config/database.js';
+import sequelize from '../../../shared/config/database.js';
 import Client from './Client.js';
 
 const Project = sequelize.define('Project', {
@@ -31,11 +31,7 @@ const Project = sequelize.define('Project', {
   },
   clientId: {
     type: DataTypes.BIGINT,
-    allowNull: false,
-    references: {
-      model: Client,
-      key: 'id'
-    }
+    allowNull: false
   }
 }, {
   timestamps: true,
@@ -43,7 +39,11 @@ const Project = sequelize.define('Project', {
 });
 
 // Define relationships
-Client.hasMany(Project);
-Project.belongsTo(Client);
+Client.hasMany(Project, {
+  foreignKey: 'clientId'
+});
+Project.belongsTo(Client, {
+  foreignKey: 'clientId'
+});
 
 export default Project;

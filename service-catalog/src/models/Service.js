@@ -1,5 +1,5 @@
 import { DataTypes } from 'sequelize';
-import sequelize from '../../../src/config/database.js';
+import sequelize from '../../../shared/config/database.js';
 
 const Service = sequelize.define('Service', {
   id: {
@@ -9,8 +9,7 @@ const Service = sequelize.define('Service', {
   },
   name: {
     type: DataTypes.STRING,
-    allowNull: false,
-    unique: true
+    allowNull: false
   },
   description: {
     type: DataTypes.TEXT,
@@ -24,7 +23,9 @@ const Service = sequelize.define('Service', {
     }
   },
   category: {
-    type: DataTypes.ENUM('WEB_DEVELOPMENT', 'MOBILE_DEVELOPMENT', 'UI_UX_DESIGN', 'CLOUD_SERVICES', 'CONSULTING', 'MAINTENANCE'),
+    type: DataTypes.ENUM(
+      'WEB_DEVELOPMENT', 'MOBILE_DEVELOPMENT', 'UI_UX_DESIGN', 'CLOUD_SERVICES', 'CONSULTING', 'MAINTENANCE'
+    ),
     allowNull: false
   },
   features: {
@@ -72,23 +73,13 @@ const Service = sequelize.define('Service', {
   tableName: 'services',
   hooks: {
     beforeValidate: (service) => {
-      // Ensure features is an array
-      if (!Array.isArray(service.features)) {
-        service.features = [];
-      }
-      // Ensure customizationOptions is an array
-      if (!Array.isArray(service.customizationOptions)) {
-        service.customizationOptions = [];
-      }
-      // Ensure technologiesUsed is an array
-      if (!Array.isArray(service.technologiesUsed)) {
-        service.technologiesUsed = [];
-      }
+      service.features = Array.isArray(service.features) ? service.features : [];
+      service.customizationOptions = Array.isArray(service.customizationOptions) ? service.customizationOptions : [];
+      service.technologiesUsed = Array.isArray(service.technologiesUsed) ? service.technologiesUsed : [];
     }
   }
 });
 
-// Create ServiceBundle model for package deals
 const ServiceBundle = sequelize.define('ServiceBundle', {
   id: {
     type: DataTypes.BIGINT,
@@ -97,36 +88,28 @@ const ServiceBundle = sequelize.define('ServiceBundle', {
   },
   name: {
     type: DataTypes.STRING,
-    allowNull: false,
-    unique: true
+    allowNull: false
   },
   description: {
-    type: DataTypes.TEXT,
-    allowNull: false
+    type: DataTypes.TEXT
   },
   price: {
     type: DataTypes.DECIMAL(10, 2),
     allowNull: false
   },
-  discountPercentage: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    validate: {
-      min: 0,
-      max: 100
-    }
-  },
   isActive: {
     type: DataTypes.BOOLEAN,
-    allowNull: false,
     defaultValue: true
+  },
+  discountPercentage: {
+    type: DataTypes.DECIMAL(5, 2),
+    allowNull: true
   }
 }, {
   timestamps: true,
   tableName: 'service_bundles'
 });
 
-// Junction table for many-to-many relationship between Service and ServiceBundle
 const BundleServices = sequelize.define('BundleServices', {
   id: {
     type: DataTypes.BIGINT,
@@ -138,8 +121,8 @@ const BundleServices = sequelize.define('BundleServices', {
   tableName: 'bundle_services'
 });
 
-// Define relationships
-Service.belongsToMany(ServiceBundle, { through: BundleServices });
-ServiceBundle.belongsToMany(Service, { through: BundleServices });
+// Define many-to-many relationships
+Service.belongsToMany(ServiceBundle, { through: BundleServices, foreignKey: 'serviceId' });
+ServiceBundle.belongsToMany(Service, { through: BundleServices, foreignKey: 'bundleId' });
 
-export { Service as default, ServiceBundle, BundleServices };
+export { Service, ServiceBundle, BundleServices };
