@@ -5,6 +5,12 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
+    "logs:dev": "tail -f logs/development/combined.log | pino-pretty",
+    "logs:test": "tail -f logs/test/combined.log | pino-pretty",
+    "logs:staging": "tail -f logs/staging/combined.log | pino-pretty",
+    "logs:prod": "tail -f logs/production/combined.log | pino-pretty",
+    "logs:error": "tail -f logs/*/error.log | pino-pretty",
+    "logs:clean": "rm -rf logs/*",
     "start": "cross-env NODE_ENV=production node scripts/start.js",
     "dev": "cross-env NODE_ENV=development nodemon scripts/start.js | pino-pretty",
     "test:services": "cross-env NODE_ENV=test node scripts/start.js",
@@ -28,16 +34,17 @@
     "env:dev": "cp .env.development .env",
     "env:test": "cp .env.test .env",
     "env:prod": "cp .env.production .env",
-    
     "docker:build": "docker build -t cosmomedia-base -f docker/Dockerfile.base .",
     "docker:dev": "docker-compose -f docker-compose.yml -f docker-compose.dev.yml up --build",
     "docker:test": "docker-compose -f docker-compose.yml -f docker-compose.test.yml up --build",
     "docker:prod": "docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build",
     "docker:down": "docker-compose down -v",
     "docker:logs": "docker-compose logs -f",
-    "docker:ps": "docker-compose ps"
+    "docker:ps": "docker-compose ps",
+    "install:cloudwatch": "npm install pino-cloudwatch@^2.1.2"
   },
   "dependencies": {
+    "@aws-sdk/client-cloudwatch-logs": "^3.540.0",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.3",
     "compression": "^1.7.4",
@@ -50,9 +57,13 @@
     "express-validator": "^7.0.1",
     "helmet": "^7.1.0",
     "http-proxy-middleware": "^2.0.6",
+    "ioredis": "^5.6.0",
     "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.9.2",
-    "pino": "^9.6.0",
+    "pino": "^8.19.0",
+    "pino-pretty": "^10.3.1",
+    "redis": "^4.7.0",
+    "rotating-file-stream": "^3.2.1",
     "sequelize": "^6.37.1",
     "zod": "^3.24.2"
   },

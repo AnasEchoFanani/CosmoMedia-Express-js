@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@shared/*": ["shared/*"],
+      "@gateway/*": ["gateway-service/src/*"],
+      "@employee/*": ["employee-service/src/*"],
+      "@client-project/*": ["client-project-service/src/*"],
+      "@billing/*": ["billing-service/src/*"],
+      "@service-catalog/*": ["service-catalog/src/*"]
+    }
+  },
+  "exclude": ["node_modules"]
+}

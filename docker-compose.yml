@@ -1,107 +1,114 @@
 version: '3.8'
 
+x-healthcheck: &default-healthcheck
+  interval: 30s
+  timeout: 10s
+  retries: 3
+  start_period: 40s
+
 services:
   # Database
   db:
     image: mysql:8.0
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p$${MYSQL_ROOT_PASSWORD}"]
+      <<: *default-healthcheck
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
       MYSQL_DATABASE: ${DB_NAME}
     volumes:
       - db_data:/var/lib/mysql
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
 
   # Redis for caching
   redis:
     image: redis:alpine
-    volumes:
-      - redis_data:/data
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+      <<: *default-healthcheck
+    volumes:
+      - redis_data:/data
 
   # Gateway Service
   gateway:
     build:
       context: .
       dockerfile: gateway-service/Dockerfile
+    healthcheck:
+      <<: *default-healthcheck
+      test: ["CMD", "curl", "-f", "http://localhost:3000/live"]
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     env_file: .env
     ports:
       - "${GATEWAY_PORT}:${GATEWAY_PORT}"
-    depends_on:
-      - db
-      - redis
-    healthcheck:
-      test: ["CMD", "wget", "-q", "--spider", "http://localhost:${GATEWAY_PORT}/health"]
-      interval: 30s
-      timeout: 3s
-      retries: 3
+
 
   # Employee Service
   employee:
     build:
       context: .
       dockerfile: employee-service/Dockerfile
-    env_file: .env
-    depends_on:
-      - db
-      - redis
     healthcheck:
-      test: ["CMD", "wget", "-q", "--spider", "http://localhost:${EMPLOYEE_SERVICE_PORT}/health"]
-      interval: 30s
-      timeout: 3s
-      retries: 3
+      <<: *default-healthcheck
+      test: ["CMD", "curl", "-f", "http://localhost:3001/live"]
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    env_file: .env
+
 
   # Client Project Service
   client-project:
     build:
       context: .
       dockerfile: client-project-service/Dockerfile
-    env_file: .env
-    depends_on:
-      - db
-      - redis
     healthcheck:
-      test: ["CMD", "wget", "-q", "--spider", "http://localhost:${CLIENT_PROJECT_SERVICE_PORT}/health"]
-      interval: 30s
-      timeout: 3s
-      retries: 3
+      <<: *default-healthcheck
+      test: ["CMD", "curl", "-f", "http://localhost:3002/live"]
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    env_file: .env
+
 
   # Billing Service
   billing:
     build:
       context: .
       dockerfile: billing-service/Dockerfile
-    env_file: .env
-    depends_on:
-      - db
-      - redis
     healthcheck:
-      test: ["CMD", "wget", "-q", "--spider", "http://localhost:${BILLING_SERVICE_PORT}/health"]
-      interval: 30s
-      timeout: 3s
-      retries: 3
+      <<: *default-healthcheck
+      test: ["CMD", "curl", "-f", "http://localhost:3003/live"]
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    env_file: .env
+
 
   # Service Catalog
   service-catalog:
     build:
       context: .
       dockerfile: service-catalog/Dockerfile
-    env_file: .env
-    depends_on:
-      - db
-      - redis
     healthcheck:
-      test: ["CMD", "wget", "-q", "--spider", "http://localhost:${SERVICE_CATALOG_PORT}/health"]
-      interval: 30s
-      timeout: 3s
-      retries: 3
+      <<: *default-healthcheck
+      test: ["CMD", "curl", "-f", "http://localhost:3004/live"]
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    env_file: .env
+
 
 volumes:
   db_data:

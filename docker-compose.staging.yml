@@ -1,0 +1,125 @@
+version: '3.8'
+
+services:
+  db:
+    environment:
+      MYSQL_ROOT_PASSWORD: ${STAGING_DB_PASSWORD}
+      MYSQL_DATABASE: cosmomedia_staging
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+    logging:
+      driver: "awslogs"
+      options:
+        awslogs-group: "cosmomedia-staging"
+        awslogs-region: "${AWS_REGION}"
+        awslogs-stream-prefix: "mysql"
+
+  redis:
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+    logging:
+      driver: "awslogs"
+      options:
+        awslogs-group: "cosmomedia-staging"
+        awslogs-region: "${AWS_REGION}"
+        awslogs-stream-prefix: "redis"
+
+  gateway:
+    image: ${DOCKER_USERNAME}/cosmomedia-gateway:latest
+    build:
+      args:
+        NODE_ENV: staging
+    environment:
+      NODE_ENV: staging
+      LOG_LEVEL: debug
+    deploy:
+      replicas: 2
+      resources:
+        limits:
+          memory: 1G
+    logging:
+      driver: "awslogs"
+      options:
+        awslogs-group: "cosmomedia-staging"
+        awslogs-region: "${AWS_REGION}"
+        awslogs-stream-prefix: "gateway"
+
+  employee:
+    image: ${DOCKER_USERNAME}/cosmomedia-employee:latest
+    build:
+      args:
+        NODE_ENV: staging
+    environment:
+      NODE_ENV: staging
+      LOG_LEVEL: debug
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+    logging:
+      driver: "awslogs"
+      options:
+        awslogs-group: "cosmomedia-staging"
+        awslogs-region: "${AWS_REGION}"
+        awslogs-stream-prefix: "employee"
+
+  client-project:
+    image: ${DOCKER_USERNAME}/cosmomedia-client-project:latest
+    build:
+      args:
+        NODE_ENV: staging
+    environment:
+      NODE_ENV: staging
+      LOG_LEVEL: debug
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+    logging:
+      driver: "awslogs"
+      options:
+        awslogs-group: "cosmomedia-staging"
+        awslogs-region: "${AWS_REGION}"
+        awslogs-stream-prefix: "client-project"
+
+  billing:
+    image: ${DOCKER_USERNAME}/cosmomedia-billing:latest
+    build:
+      args:
+        NODE_ENV: staging
+    environment:
+      NODE_ENV: staging
+      LOG_LEVEL: debug
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+    logging:
+      driver: "awslogs"
+      options:
+        awslogs-group: "cosmomedia-staging"
+        awslogs-region: "${AWS_REGION}"
+        awslogs-stream-prefix: "billing"
+
+  service-catalog:
+    image: ${DOCKER_USERNAME}/cosmomedia-service-catalog:latest
+    build:
+      args:
+        NODE_ENV: staging
+    environment:
+      NODE_ENV: staging
+      LOG_LEVEL: debug
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+    logging:
+      driver: "awslogs"
+      options:
+        awslogs-group: "cosmomedia-staging"
+        awslogs-region: "${AWS_REGION}"
+        awslogs-stream-prefix: "service-catalog"
